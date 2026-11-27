@@ -58,6 +58,8 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.example.salcity.model.HomeConfig;
+import com.example.salcity.model.CoordenadasSalvador;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,10 +67,6 @@ import android.util.Log;
 
 /** Home SalCity: interface, navegação e mapa. Sem dependência de serviços do back-end. */
 public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
-    // Coordenadas aproximadas do centro de Salvador (BA).
-    private static final LatLng SALVADOR = new LatLng(-12.9714, -38.5014);
-    // Nível de aproximação inicial da câmera do Google Maps.
-    private static final float ZOOM_INICIAL = 12.5f;
     // Referência recebida no callback onMapReady(); pode ser nula antes do carregamento.
     private GoogleMap googleMap;
     // Campo de busca visual da Home (pesquisa local de demonstração).
@@ -327,7 +325,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override public void onMapReady(@NonNull GoogleMap map) {
         googleMap = map;
-        centralizarMapaSalvador();
+        centralizarMapaSalvador;
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
         googleMap.getUiSettings().setScrollGesturesEnabled(true);
         googleMap.getUiSettings().setRotateGesturesEnabled(true);
@@ -337,16 +335,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.setOnPoiClickListener(this::abrirDetalhesLocal);
     }
 
-    /** Retorna a câmera ao centro de Salvador; ignora toque se mapa indisponível. */
-    private void centralizarMapaSalvador() {
-        if (googleMap != null) googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(SALVADOR, ZOOM_INICIAL));
-    }
-
     /** Só ativa a camada de localização com permissão concedida. */
     private void solicitarLocalizacao() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             ativarMinhaLocalizacao();
-        else permissaoLocalizacao.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        } else {
+            permissaoLocalizacao.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    /** Retorna a câmera ao centro de Salvador; ignora toque se mapa indisponível. */
+    private void centralizarMapaSalvador() {
+        if (googleMap != null) googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(HomeConfig.SALVADOR_CENTRO, HomeConfig.ZOOM_INICIAL));
     }
 
     /**
