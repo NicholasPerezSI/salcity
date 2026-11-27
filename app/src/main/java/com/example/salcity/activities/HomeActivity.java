@@ -78,7 +78,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<String> temasAtivos = new ArrayList<>();
     private String regiaoAtiva = "Toda Salvador";
     private String transporteAtivo = null;
-    private int orcamentoMin = 0, orcamentoMax = 500;
+    private int orcamentoMin = HomeConfig.ORCAMENTO_MIN_PADRAO, orcamentoMax = HomeConfig.ORCAMENTO_MAX_PADRAO;
 
     // Recebe o resultado sem recriar a Home nem abrir a tela de roteiros.
     private final ActivityResultLauncher<Intent> resultadoFiltros =
@@ -90,8 +90,8 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 regiaoAtiva = dados.getStringExtra("localizacao");
                 if (regiaoAtiva == null) regiaoAtiva = "Toda Salvador";
                 transporteAtivo = dados.getStringExtra("transporte");
-                orcamentoMin = dados.getIntExtra("orcamento_min", 0);
-                orcamentoMax = dados.getIntExtra("orcamento_max", 500);
+                orcamentoMin = dados.getIntExtra("orcamento_min", HomeConfig.ORCAMENTO_MIN_PADRAO);
+                orcamentoMax = dados.getIntExtra("orcamento_max", HomeConfig.ORCAMENTO_MAX_PADRAO);
                 Toast.makeText(this,
                         "Filtros salvos. Serão aplicados com os dados do back-end.",
                         Toast.LENGTH_SHORT).show();
@@ -296,19 +296,18 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         String busca = campoPesquisaHome.getText().toString().trim();
         if (busca.isEmpty()) { campoPesquisaHome.setError("Digite um local"); return; }
         if (googleMap == null) { Toast.makeText(this, "Mapa indisponível", Toast.LENGTH_SHORT).show(); return; }
-        String termo = busca.toLowerCase(java.util.Locale.ROOT);
-        if (termo.contains("pelourinho")) focarLocal(new LatLng(-12.9718, -38.5108));
-        else if (termo.contains("farol") || termo.contains("barra")) focarLocal(new LatLng(-13.0107, -38.5328));
-        else if (termo.contains("mercado") || termo.contains("modelo")) focarLocal(new LatLng(-12.9737, -38.5133));
+            String termo = busca.toLowerCase(java.util.Locale.ROOT);
+        if (termo.contains(HomeConfig.TERMO_PELOURINHO)) focarLocal(CoordenadasSalvador.PELOURINHO);
+        else if (termo.contains(HomeConfig.TERMO_FAROL) || termo.contains(HomeConfig.TERMO_BARRA)) focarLocal(CoordenadasSalvador.FAROL_BARRA);
+        else if (termo.contains(HomeConfig.TERMO_MERCADO) || termo.contains(HomeConfig.TERMO_MODELO)) focarLocal(CoordenadasSalvador.MERCADO_MODELO);
         else Toast.makeText(this, "Busca demonstrativa: tente Pelourinho, Farol ou Mercado Modelo", Toast.LENGTH_LONG).show();
-    }
-
+       }
     /**
      * Move a câmera até uma coordenada (não adiciona marcadores).
      * @param local coordenada geográfica do destino.
      */
-    private void focarLocal(LatLng local) {
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, 15f));
+       private void focarLocal(LatLng local) {
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(local, HomeConfig.ZOOM_FOCO));
     }
 
     /** Inicializa o SupportMapFragment mantido com o ID original mapHome. */
@@ -325,7 +324,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     @Override public void onMapReady(@NonNull GoogleMap map) {
         googleMap = map;
-        centralizarMapaSalvador;
+        centralizarMapaSalvador();
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
         googleMap.getUiSettings().setScrollGesturesEnabled(true);
         googleMap.getUiSettings().setRotateGesturesEnabled(true);
